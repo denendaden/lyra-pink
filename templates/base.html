@@ -1,0 +1,58 @@
+<!DOCTYPE html>
+<html>
+    <head>
+        <title>{% block title %}lyra.pink!{% endblock %}</title>
+        <link rel="stylesheet" href="static/css/lyrastyle.css">
+        <link rel="icon" type="image/png" href="static/favicon.png">
+        <meta property="og:title" content="{{ self.title() }}" />
+        <meta property="og:type" content="website" />
+        <meta property="og:image" content="https://lyra.pink/static/favicon.png" />
+        <meta property="og:url" content="https://lyra.pink/" />
+        <meta property="og:description" content="website of the most beautiful girl in the world &lt;3" />
+        <meta name="viewport" content="width=device-width, initial-scale=1" />
+    </head>
+
+    <body>
+        <div id="center">
+            <div id="sidebar">
+                <ul class="no-bullets">
+                    <li>
+                    {% if page == "/" %}
+                        <b>home</b>
+                    {% else %}
+                        <a href="/">home</a>
+                    {% endif%}
+                    </li>
+                    <li>
+                    {% if page == "photos" %}
+                        <b>photos</b>
+                    {% else %}
+                        <a href="photos">photos</a>
+                    {% endif %}
+                    </li>
+                    <li>
+                    {% if page == "writing" %}
+                        <b>writing</b>
+                    {% else %}
+                        <a href="writing">writing</a>
+                    {% endif %}
+                    </li>
+                    <li><a href="static/resume.pdf">resume</a></li>
+                    <li><a href="https://github.com/Denendaden/">GitHub</a></li>
+                    <hr>
+                    <li>
+                    {% if page == "contact" %}
+                        <b>contact</b>
+                    {% else %}
+                        <a href="contact">contact</a>
+                    {% endif %}
+                    </li>
+                </ul>
+            </div>
+            <div id="content">
+                {% block content %}{% endblock %}
+            </div>
+            <div id="sidebar"></div>
+        </div>
+    </body>
+</html>

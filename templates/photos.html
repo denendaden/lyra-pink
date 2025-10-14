@@ -1,0 +1,26 @@
+{% extends "base.html" %}
+{% block title %}photos -- lyra.pink!{% endblock %}
+{% block content %}
+<h1>
+    photos of lyra!
+</h1>
+
+<p>
+    <b>Photographer:</b> Chris Guerrero (<a href="https://www.instagram.com/christopher_guerrero11">@christopher_guerrero11</a>)
+</p>
+{{ shoots["20251001"] | safe }}
+<hr>
+
+<p>
+    <b>Photographer:</b> <a href="http://katharinapoblotzki.com/">Katharina Poblotzki</a> (<a href="https://www.instagram.com/katharinapoblotzki/">@katharinapoblotzki</a>)
+    <br>
+    <b>Stylist:</b> <a href="https://www.reactionarybodies.com/">Jaddie Fang</a> (<a href="https://www.instagram.com/yuis.adagio/">@yuis.adagio</a>)
+</p>
+{{ shoots["20250806"] | safe }}
+<hr>
+
+<p>
+    <b>Photographer:</b> <a href="http://katharinapoblotzki.com/">Katharina Poblotzki</a> (<a href="https://www.instagram.com/katharinapoblotzki/">@katharinapoblotzki</a>)
+</p>
+{{ shoots["20240924"] | safe }}
+{% endblock %}

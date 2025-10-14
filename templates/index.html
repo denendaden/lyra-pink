@@ -1,0 +1,63 @@
+{% extends "base.html" %}
+{% block content %}
+<h1>
+    lyra &lt;3
+</h1>
+
+<div class="split">
+    <div class="left">
+        <p>
+            I'm a <a href="https://github.com/Denendaden/">programmer</a>, linguist, <a href="photos">model</a>, and <a href="writing">writer</a> based in the Philadelphia area.
+            Currently studying at Swarthmore College (class of '27) and majoring in linguistics.
+        </p>
+        <p>
+            Trans woman; my pronouns are she/her.
+        </p>
+        <p>
+            Most of my work experience is in digital archives.
+            Check out my <a href="static/resume.pdf">resume</a>!
+        </p>
+        <p>
+            <a href="https://bsky.app/profile/lyra.pink">@lyra.pink</a> on Bluesky.
+            I don't use other social media and am barely active there.
+            You'll probably have more luck reaching out to me <a href="contact">directly</a>.
+        </p>
+        <p>
+            If you got here from a business card I gave you, it's probably because I thought you were cute.
+        </p>
+    </div>
+    <div class="right">
+        <img src="static/photos/20250806/fullsize/Lyra-by-Katharina-Poblotzki-4.jpg">
+        <small>
+            Photo by <a href="http://katharinapoblotzki.com/">Katharina Poblotzki</a>
+        </small>
+    </div>
+</div>
+
+<samp><pre>
+Data for Swarthmore, PA (from <a href="https://aa.usno.navy.mil/data/api">USNO</a>)
+ Sunrise: {{ data.sunrise }}     Sunset: {{ data.sunset }}
+Moonrise: {{ data.moonrise }}    Moonset: {{ data.moonset }}
+Moon phase: {{ data.phase }} ({{ data.fracillum }} lit)
+
+Astronomy Picture of the Day (from <a href="https://api.nasa.gov/">NASA</a>):
+<a href="https://apod.nasa.gov/">{{ data.apod_title }}</a> ({{ data.apod_date }})
+Copyright {{ data.apod_copyright }}
+{{ data.apod_image | safe }}
+{{ data.apod_explanation }}
+
+Latest LYRA data (from <a href="https://proba2.sidc.be/data/LYRA">PROBA2</a>):
+<img src="https://proba2.sidc.be/lyra/data/3DayQuicklook/LyraCalSWClatest.png">
+</pre>
+</samp>
+
+<br>
+
+<p>
+    <img src="https://wolfgirl.systems/img/wolfgirl88x31.gif" alt="wolfgirl.systems 88x31">
+</p>
+
+<small>
+    The source code for this website is available on <a href="https://github.com/Denendaden/lyra-pink">GitHub</a>, licensed under the <a href="https://www.gnu.org/licenses/agpl-3.0.html">AGPL</a>.
+</small>
+{% endblock %}
