@@ -1,18 +1,22 @@
 from datetime import datetime
 from pathlib import Path
 import os
-import sys
 
 from flask import Flask, render_template
 from flask_apscheduler import APScheduler
+import jsons
 import requests
 
+class Config:
+    SCHEDULER_API_ENABLED = True
+
 app = Flask(__name__)
+app.config.from_object(Config())
+
 scheduler = APScheduler()
 scheduler.init_app(app)
 scheduler.start()
 
-# Store data from the APIs with defaults in case nothing is returned.
 class ApiData:
     # Moonrise, etc. will be None if the moon does not rise during that
     # 24-hour period (theoretically the same for sunrise).
@@ -44,20 +48,20 @@ def get_api_data() -> ApiData:
     try:
         usno = requests.get("https://aa.usno.navy.mil/api/rstt/oneday",
                             params=usno_payload,
-                            timeout=10)
+                            timeout=4)
         usno_data = usno.json()["properties"]["data"]
-        data.phase = usno_data.get("curphase")
-        data.fracillum = usno_data.get("fracillum")
+        data.phase = usno_data.get("curphase") or data.phase
+        data.fracillum = usno_data.get("fracillum") or data.fracillum
         for sundata in usno_data.get("sundata", []):
             if sundata.get("phen") == "Rise":
-                data.sunrise = sundata.get("time")
+                data.sunrise = sundata.get("time") or data.sunrise
             elif sundata.get("phen") == "Set":
-                data.sunset = sundata.get("time")
+                data.sunset = sundata.get("time") or data.sunset
         for moondata in usno_data.get("moondata"):
             if moondata.get("phen") == "Rise":
-                data.moonrise = moondata.get("time")
+                data.moonrise = moondata.get("time") or data.moonrise
             elif moondata.get("phen") == "Set":
-                data.moonset = moondata.get("time")
+                data.moonset = moondata.get("time") or data.moonset
     except requests.exceptions.ReadTimeout:
         app.logger.warning("Timed out accessing USNO API")
     except requests.exceptions.JSONDecodeError:
@@ -69,14 +73,13 @@ def get_api_data() -> ApiData:
     try:
         apod = requests.get("https://api.nasa.gov/planetary/apod",
                             params={"api_key": os.environ.get("NASA_API_KEY")},
-                            timeout=10)
+                            timeout=4)
         apod_data = apod.json()
-        data.apod_title = apod_data.get("title")
-        data.apod_copyright = apod_data.get("copyright")
-        data.apod_explanation = apod_data.get("explanation")
-        data.apod_date = apod_data.get("date")
-        apod_url = apod_data.get("url")
-        if apod_url:
+        data.apod_title = apod_data.get("title") or data.apod_title
+        data.apod_copyright = apod_data.get("copyright") or data.apod_copyright
+        data.apod_explanation = apod_data.get("explanation") or data.apod_explanation
+        data.apod_date = apod_data.get("date") or data.apod_date
+        if (apod_url := apod_data.get("url")):
             data.apod_image = f"<img src={apod_url}>"
     except requests.exceptions.ReadTimeout:
         app.logger.warning("Timed out accessing APOD API")
@@ -85,16 +88,21 @@ def get_api_data() -> ApiData:
 
     return data
 
-# Store data from the APIs globally and periodically update it to avoid
-# delays in loading the website.
-data = get_api_data()
-
-@scheduler.task("cron", id="update_api_data", day="*")
-def update_api_data():
+@scheduler.task("cron", id="update_data", day="*")
+def update_data():
     data = get_api_data()
+    with open("data.json", 'w') as file:
+        file.write(jsons.dumps(data))
+update_data()
 
 @app.route("/")
 def index():
+    data = ApiData()
+    try:
+        with open("data.json", 'r') as file:
+            data = jsons.loads(file.read(), ApiData)
+    except:
+        app.logger.warning("Error loading saved API data")
     return render_template("index.html", page="/", data=data)
 
 @app.route("/photos")
@@ -111,9 +119,12 @@ def photos():
                 tpath = str(p)
                 shoots[s.name] += f'<a href="{fspath}"><img src="{tpath}"></a>'
             shoots[s.name] += '</div>'
-            
+
     return render_template("photos.html", page="photos", shoots=shoots)
 
 @app.route("/<page>")
 def page(page=None):
     return render_template(f"{page}.html", page=page)
+
+if __name__ == "__main__":
+    app.run()
